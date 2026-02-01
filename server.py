@@ -9,7 +9,7 @@ sock.setblocking(False)
 
 
 players = {}
-conn_id = {}
+conn_ids = {}
 id_conter = 0
 
 
@@ -26,13 +26,15 @@ def handle_client():
                 data = conn.recv(64).decode().strip("|")
                 if "," in data:
                     parts = data.split(",")
-                    if len(parts) == 4:
-                        pid, x, y, radius = map(int, parts)
+                    if len(parts) == 5:
+                        pid, x, y, radius = map(int, parts[:4])
+                        nick = parts[4]
                         players[conn] = {
                             "id": pid,
                             "x": x,
                             "y": y,
-                            "radius": radius
+                            "radius": radius,
+                            "nickname": nick
                         }
                         player_data[conn] = players[conn]
 
@@ -40,7 +42,7 @@ def handle_client():
                 continue
 
         eliminated =[]
-        for conn in player_data:
+        for conn1 in player_data:
             if conn1 in eliminated: continue
             p1 = player_data[conn1]
             for conn2 in player_data:
@@ -64,9 +66,10 @@ def handle_client():
                 continue
 
             try:
-                packet = '|'.join(f"{p['id']},{p['x']},{p['y']},{p['radius']}" for c , p in players.items() if c != conn and c not in eliminated) + '|'
+                packet = '|'.join(f"{p['id']},{p['x']},{p['y']},{p['radius']},{p['nickname']}" for c , p in players.items() if c != conn and c not in eliminated) + '|'
                 conn.send(packet.encode())
-            except:
+            except Exception as e:
+                print(e)
                 to_remove.append(conn)
 
         for conn in to_remove:
@@ -82,9 +85,9 @@ while True:
         conn, addr = sock.accept()
         conn.setblocking(False)
         id_conter += 1
-        players[conn] = {'id': id_conter, 'x': 0, 'y': 0, 'radius': 20}
+        players[conn] = {'id': id_conter, 'x': 0, 'y': 0, 'radius': 20,'nickname':None}
         conn_ids[conn] = id_conter
-        conn.send(f"{id_conter},0,0,20".encode())
+        conn.send(f"{id_conter},0,0,20|".encode())
     except:
         pass
 
