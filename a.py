@@ -120,10 +120,10 @@ while running:
 
    if not lose:
        keys = key.get_pressed()
-       if keys[K_w]: my_player[1] -= 15
-       if keys[K_s]: my_player[1] += 15
-       if keys[K_a]: my_player[0] -= 15
-       if keys[K_d]: my_player[0] += 15
+       if keys[K_w]: my_player[1] -= 10
+       if keys[K_s]: my_player[1] += 10
+       if keys[K_a]: my_player[0] -= 10
+       if keys[K_d]: my_player[0] += 10
 
        try:
            msg = f"{my_id},{my_player[0]},{my_player[1]},{my_player[2]},{nickname}"
